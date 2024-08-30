@@ -5,7 +5,7 @@ def offre_page():
 
     # Récupérer la somme des prix totaux des moyens depuis la page Outillage
     if 'num_moyens' in st.session_state:
-        total_outillage = sum(st.session_state.get(f"prix_tot_{i + 1}", 0) for i in range(st.session_state.num_moyens))
+        total_outillage = sum(float(st.session_state.get(f"prix_tot_{i + 1}", 0)) for i in range(st.session_state.num_moyens))
     else:
         total_outillage = 0.0
 

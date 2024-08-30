@@ -1,8 +1,13 @@
 import streamlit as st
 import pandas as pd
+from utils import read_parameters_file
 
 def synthese_page():
     st.title("Synthèse")
+
+    # Load parameters and operations from file
+    params_file_name = "parametres.txt"
+    params, operations = read_parameters_file(params_file_name)
 
     # Synthèse de la page Gamme
     st.header("Synthèse de la Gamme")
@@ -18,7 +23,7 @@ def synthese_page():
             quantite_optionnelle = st.session_state.get(f"quantite_optionnelle_{i+1}", None)
             
             for j, op in enumerate(st.session_state.operations[i]):
-                temps = st.session_state.operations_times.get(op, 0)
+                temps = operations.get(op, 0)
                 dmh = temps / 3600 * 1000  # Conversion en DMH
                 coeff = st.session_state.coefficients[i].get(op, None)
                 gamme_data.append([item_name, description, ref_plan, descriptif, nombre_fils, quantite, quantite_optionnelle, op, temps, dmh, coeff])
@@ -31,6 +36,7 @@ def synthese_page():
     # Synthèse de la page Outillage
     st.header("Synthèse de l'Outillage")
     if 'num_moyens' in st.session_state:
+        total_outillage = sum(float(st.session_state.get(f"prix_tot_{i + 1}", 0)) for i in range(st.session_state.num_moyens))
         outillage_data = []
         for i in range(st.session_state.num_moyens):
             designation = st.session_state.get(f"designation_{i+1}", None)
@@ -43,22 +49,23 @@ def synthese_page():
         
         outillage_df = pd.DataFrame(outillage_data, columns=["Désignation", "Fournisseur", "Référence Fournisseur", "Quantité", "Prix Uni (€)", "Prix Tot (€)"])
         st.table(outillage_df)
+
+        st.subheader(f"Total Outillage: {total_outillage:.2f} €")
     else:
         st.write("Aucune information disponible pour l'Outillage.")
 
     # Synthèse de la page Offre
     st.header("Synthèse de l'Offre")
     offre_data = []
-    offre_data.append(["Transport Import /export", st.session_state.get("transport_import_export", None)])
-    offre_data.append(["Outillage", st.session_state.get("outillage", None)])
-    offre_data.append(["Frais Etudes NRE/Program", st.session_state.get("frais_etudes_nre_program", None)])
-    offre_data.append(["Condition de payement", st.session_state.get("condition_paiement", None)])
-    offre_data.append(["Raw Materiel", st.session_state.get("raw_materiel", None)])
-    offre_data.append(["Test electrique", st.session_state.get("test_electrique", None)])
-    offre_data.append(["Transport", st.session_state.get("transport", None)])
-    offre_data.append(["Validité", st.session_state.get("validite", None)])
-    offre_data.append(["Packaging", st.session_state.get("packaging", None)])
+    offre_data.append(["Transport Import /export", st.session_state.get("transport_import_export", "None")])
+    offre_data.append(["Outillage", f"{total_outillage:.2f} €"])
+    offre_data.append(["Frais Etudes NRE/Program", st.session_state.get("frais_etudes_nre_program", "None")])
+    offre_data.append(["Condition de payement", st.session_state.get("condition_paiement", "None")])
+    offre_data.append(["Raw Materiel", st.session_state.get("raw_materiel", "None")])
+    offre_data.append(["Test electrique", st.session_state.get("test_electrique", "None")])
+    offre_data.append(["Transport", st.session_state.get("transport", "None")])
+    offre_data.append(["Validité", st.session_state.get("validite", "None")])
+    offre_data.append(["Packaging", st.session_state.get("packaging", "None")])
 
     offre_df = pd.DataFrame(offre_data, columns=["Élément", "Valeur"])
     st.table(offre_df)
-
