@@ -1,31 +1,11 @@
-import os
-import ast
-import streamlit as st
+# utils.py
 
-def read_parameters_file(file_name):
-    # Determine the directory of the current script
-    script_dir = os.path.dirname(__file__)
-    
-    # Create the full file path
-    file_path = os.path.join(script_dir, file_name)
-
-    params = {}
-    operations = {}
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            for line in file:
-                line = line.strip()
-                if line and not line.startswith('#'):
-                    key, value = line.split('=', 1)
-                    if key.strip() == 'operations':
-                        operations = ast.literal_eval(value.strip())
-                    else:
-                        params[key.strip()] = value.strip()
-    except FileNotFoundError:
-        st.error(f"Le fichier {file_name} est introuvable.")
-    except Exception as e:
-        st.error(f"Erreur lors de la lecture du fichier : {e}")
-    return params, operations
+def read_parameters():
+    """
+    Imports and returns the operations_times dictionary from the parametres.py module.
+    """
+    from parametres import operations_times
+    return operations_times
 
 def calculate_dmh(temps_seconds):
     """

@@ -1,3 +1,0 @@
-euro_price= 11
-taux_horaire= 8
-operations = {"Coupe": 10, "Denudage": 5}
